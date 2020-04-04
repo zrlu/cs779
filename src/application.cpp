@@ -997,7 +997,7 @@ void Application::draw_hud() {
   messages.clear();
 
   const size_t size = 16;
-  const float x0 = use_hdpi ? screenW - 200 * 2 : screenW - 200;
+  const float x0 = use_hdpi ? screenW - 100 * 2 : screenW - 100;
   const float y0 = use_hdpi ? 32 : 16;
   const int inc = use_hdpi ? 24 : 12;
   float y = y0 + inc - size;
@@ -1034,16 +1034,7 @@ void Application::draw_hud() {
   } else {
     Info selectionInfo = scene->getSelectionInfo();
     for (const string &s : selectionInfo) {
-      size_t split = s.find_first_of(":");
-      if (split != string::npos) {
-        split++;
-        string s1 = s.substr(0, split);
-        string s2 = s.substr(split);
-        draw_string(x0, y, s1, size, text_color);
-        draw_string(x0 + (use_hdpi ? 150 : 75), y, s2, size, text_color);
-      } else {
-        draw_string(x0, y, s, size, text_color);
-      }
+      draw_string(x0, y, s, size, text_color);
       y += inc;
     }
   }

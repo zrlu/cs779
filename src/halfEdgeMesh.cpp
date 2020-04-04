@@ -790,15 +790,12 @@ Info Vertex::getInfo() {
   m5 << "Position: " << position;
   m6 << "Boundary: " << (isBoundary() ? "YES" : "NO");
 
-  info.reserve(8);
+  info.reserve(6);
   info.push_back(m1.str());
-  info.push_back(string());
   info.push_back(m2.str());
   info.push_back(m3.str());
-  info.push_back(string());
   info.push_back(m4.str());
   info.push_back(m5.str());
-  info.push_back(string());
   info.push_back(m6.str());
 
   return info;
@@ -815,10 +812,8 @@ Info Edge::getInfo() {
 
   info.reserve(4);
   info.push_back(m1.str());
-  info.push_back(string());
   info.push_back(m2.str());
   info.push_back(m3.str());
-  info.push_back(string());
   info.push_back(m4.str());
 
   return info;
@@ -834,14 +829,11 @@ Info Face::getInfo() {
   m4 << "Degree: " << degree();
   m5 << "Boundary: " << (isBoundary() ? "YES" : "NO");
 
-  info.reserve(8);
+  info.reserve(5);
   info.push_back(m1.str());
-  info.push_back(string());
   info.push_back(m2.str());
   info.push_back(m3.str());
-  info.push_back(string());
   info.push_back(m4.str());
-  info.push_back(string());
   info.push_back(m5.str());
 
   return info;
@@ -862,15 +854,12 @@ Info Halfedge::getInfo() {
 
   info.reserve(8);
   info.push_back(m1.str());
-  info.push_back(string());
   info.push_back(m2.str());
   info.push_back(m3.str());
   info.push_back(m4.str());
-  info.push_back(string());
   info.push_back(m5.str());
   info.push_back(m6.str());
   info.push_back(m7.str());
-  info.push_back(string());
   info.push_back(m8.str());
 
   return info;
