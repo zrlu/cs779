@@ -16,27 +16,91 @@ VertexIter HalfedgeMesh::splitEdge(EdgeIter e0) {
   FaceIter f0 = e0->halfedge()->face();
   FaceIter f1 = e0->halfedge()->twin()->face();
 
-  if (f0->isBoundary() || f1->isBoundary())
-  {
-	  return e0->halfedge()->vertex();
+  if (f1->isBoundary()) {
+    HalfedgeIter h0 = e0->halfedge();
+    HalfedgeIter h1 = h0->next();
+    HalfedgeIter h2 = h1->next();
+    HalfedgeIter h3 = h0->twin();
+    HalfedgeIter h4 = h1->twin();
+    HalfedgeIter h5 = h2->twin();
+    HalfedgeIter h6 = newHalfedge();
+    HalfedgeIter h7 = newHalfedge();
+    HalfedgeIter h8 = newHalfedge();
+    HalfedgeIter h9 = newHalfedge();
+  
+    VertexIter v0 = h0->vertex();
+    VertexIter v1 = h1->vertex();
+    VertexIter v2 = h2->vertex();
+    VertexIter v3 = newVertex();
+    v3->position = (v0->position + v1->position) / 2;
+
+    EdgeIter e1 = h1->edge();
+    EdgeIter e2 = h2->edge();
+    EdgeIter e3 = newEdge();
+    EdgeIter e4 = newEdge();
+
+    FaceIter f2 = newFace();
+    FaceIter f3 = newFace(true);
+
+    if (!f0->getFace()->alreadySplitted) {
+      f0->getFace()->subdivisionLevel += 1;
+      f0->getFace()->alreadySplitted = true;
+    }
+
+    f2->getFace()->subdivisionLevel = f0->getFace()->subdivisionLevel;
+    f2->getFace()->alreadySplitted = true;
+
+    if (!f1->getFace()->alreadySplitted) {
+      f1->getFace()->subdivisionLevel += 1;
+      f1->getFace()->alreadySplitted = true;
+    }
+
+    f3->getFace()->subdivisionLevel = f1->getFace()->subdivisionLevel;
+    f3->getFace()->alreadySplitted = true;
+
+    h0->setNeighbors(h9, h7, v0, e0, f0);
+    h1->setNeighbors(h8, h4, v1, e1, f2);
+    h2->setNeighbors(h0, h5, v2, e2, f0);
+    h7->setNeighbors(h3->next(), h0, v3, e0, f1);
+    h3->setNeighbors(h7, h6, v1, e3, f3);
+    h6->setNeighbors(h1, h3, v3, e3, f2);
+    h8->setNeighbors(h6, h9, v2, e4, f2);
+    h9->setNeighbors(h2, h8, v3, e4, f0);
+
+    e0->halfedge() = h0;
+    e1->halfedge() = h1;
+    e2->halfedge() = h2;
+    e3->halfedge() = h6;
+    e4->halfedge() = h8;
+
+    f0->halfedge() = h0;
+    f1->halfedge() = h6;
+    f2->halfedge() = h3;
+    f3->halfedge() = h7;
+
+    v3->halfedge() = h7;
+
+    return v3;
   }
 
   HalfedgeIter h0 = e0->halfedge();
   HalfedgeIter h1 = h0->next();
   HalfedgeIter h2 = h1->next();
-
   HalfedgeIter h3 = h0->twin();
   HalfedgeIter h4 = h3->next();
   HalfedgeIter h5 = h4->next();
-
-
   HalfedgeIter h6 = h1->twin();
   HalfedgeIter h7 = h2->twin();
-
   HalfedgeIter h8 = h4->twin();
   HalfedgeIter h9 = h5->twin();
+  HalfedgeIter h10 = newHalfedge();
+  HalfedgeIter h11 = newHalfedge();
+  HalfedgeIter h12 = newHalfedge();
+  HalfedgeIter h13 = newHalfedge();
+  HalfedgeIter h14 = newHalfedge();
+  HalfedgeIter h15 = newHalfedge();
 
-  auto v0 = h0->vertex();
+  VertexIter v0 = h0->vertex();
   VertexIter v1 = h3->vertex();
   VertexIter v2 = h6->vertex();
   VertexIter v3 = h8->vertex();
@@ -45,17 +109,9 @@ VertexIter HalfedgeMesh::splitEdge(EdgeIter e0) {
   EdgeIter e2 = h2->edge();
   EdgeIter e3 = h4->edge();
   EdgeIter e4 = h5->edge();
-
   EdgeIter e5 = newEdge();
   EdgeIter e6 = newEdge();
   EdgeIter e7 = newEdge();
-
-  HalfedgeIter h10 = newHalfedge();
-  HalfedgeIter h11 = newHalfedge();
-  HalfedgeIter h12 = newHalfedge();
-  HalfedgeIter h13 = newHalfedge();
-  HalfedgeIter h14 = newHalfedge();
-  HalfedgeIter h15 = newHalfedge();
 
   FaceIter f2 = newFace();
   FaceIter f3 = newFace();
@@ -77,7 +133,7 @@ VertexIter HalfedgeMesh::splitEdge(EdgeIter e0) {
 
 
   VertexIter v4 = newVertex();
-  v4->position = (v1->position + v0->position) / 2;
+  v4->position = (v0->position + v1->position) / 2;
 
   h0->setNeighbors(h1, h3, v4, e0, f0);
   h1->setNeighbors(h10, h6, v1, e1, f0);
@@ -161,7 +217,7 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
   FaceIter f0 = e0->halfedge()->face();
   FaceIter f1 = e0->halfedge()->twin()->face();
 
-  if (f0->isBoundary() || f1->isBoundary())
+  if (f1->isBoundary())
   {
 	  return e0;
   }
@@ -618,8 +674,8 @@ void MeshResampler::upsample(HalfedgeMesh& mesh)
 
 	  auto he = vit->halfedge();
 	  Size k = vit->degree();
-	  float beta = (k == 3 ? 3.0f / 16.0f : 3.0f / (8.0f * k));
-	  vit->newPosition = (1.0f - k * beta) * vit->position;
+	  float beta = (k == 3 ? 3.0 / 16.0 : 3.0 / (8.0 * k));
+	  vit->newPosition = (1.0 - double(k) * beta) * vit->position;
 
 	  auto nit_begin = vit->halfedge()->twin();
 	  auto nit = nit_begin;
@@ -630,22 +686,30 @@ void MeshResampler::upsample(HalfedgeMesh& mesh)
 	  } while (nit != nit_begin);
 	}
 	else {
-	  vit->newPosition = vit->position;
+      auto nit = vit->halfedge()->twin();
+      auto a = nit->vertex()->position;
+      while (!nit->isBoundary()) {
+        nit = nit->next()->twin();
+      }
+      auto b = nit->vertex()->position;
+      // std::cout << a << " " << v << " " << b << std::endl;
+	  vit->newPosition = (a + b) / 8.0 + (3.0 / 4.0) * vit->position;
 	}
   }
 
   // Next, compute the updated vertex positions associated with edges.
   for (auto eit = mesh.edgesBegin(); eit != mesh.edgesEnd(); eit++)
   {
-	if (!eit->halfedge()->isBoundary()) {
+	if (!eit->isBoundary()) {
 	  Vector3D v0 = eit->halfedge()->vertex()->position;
 	  Vector3D v1 = eit->halfedge()->twin()->vertex()->position;
 	  Vector3D v2 = eit->halfedge()->next()->twin()->vertex()->position;
 	  Vector3D v3 = eit->halfedge()->twin()->next()->twin()->vertex()->position;
 	  eit->newPosition = v0 * 3.0 / 8.0 + v1 * 3.0 / 8.0 + v2 * 1.0 / 8.0 + v3 * 1.0 / 8.0;
-	}
-	else {
-	  eit->newPosition = eit->getVertex()->position;
+	} else {
+      Vector3D v0 = eit->halfedge()->vertex()->position;
+      Vector3D v1 = eit->halfedge()->twin()->vertex()->position;
+	  eit->newPosition = (v0 + v1) / 2.0;
 	}
   }
 
