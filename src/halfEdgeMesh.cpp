@@ -822,19 +822,21 @@ Info Edge::getInfo() {
 Info Face::getInfo() {
   Info info;
 
-  ostringstream m1, m2, m3, m4, m5;
+  ostringstream m1, m2, m3, m4, m5, m6;
   m1 << "FACE";
   m2 << "Address: " << this;
   m3 << "Halfedge: " << elementAddress(halfedge());
   m4 << "Degree: " << degree();
   m5 << "Boundary: " << (isBoundary() ? "YES" : "NO");
+  m6 << "Subdivision Level: " << subdivisionLevel;
 
-  info.reserve(5);
+  info.reserve(6);
   info.push_back(m1.str());
   info.push_back(m2.str());
   info.push_back(m3.str());
   info.push_back(m4.str());
   info.push_back(m5.str());
+  info.push_back(m6.str());
 
   return info;
 }

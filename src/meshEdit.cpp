@@ -60,6 +60,22 @@ VertexIter HalfedgeMesh::splitEdge(EdgeIter e0) {
   FaceIter f2 = newFace();
   FaceIter f3 = newFace();
 
+  if (!f0->getFace()->alreadySplitted) {
+    f0->getFace()->subdivisionLevel += 1;
+    f0->getFace()->alreadySplitted = true;
+  }
+  if (!f1->getFace()->alreadySplitted) {
+    f1->getFace()->subdivisionLevel += 1;
+    f1->getFace()->alreadySplitted = true;
+  }
+
+  f2->getFace()->subdivisionLevel = f0->getFace()->subdivisionLevel;
+  f2->getFace()->alreadySplitted = true;
+
+  f3->getFace()->subdivisionLevel = f1->getFace()->subdivisionLevel;
+  f3->getFace()->alreadySplitted = true;
+
+
   VertexIter v4 = newVertex();
   v4->position = (v1->position + v0->position) / 2;
 
@@ -677,6 +693,11 @@ void MeshResampler::upsample(HalfedgeMesh& mesh)
   // Copy the updated vertex positions to the subdivided mesh.
   for (auto vit = mesh.verticesBegin(); vit != mesh.verticesEnd(); vit++) {
 	vit->position = vit->newPosition;
+  }
+
+  // clear alreadySplitted flag
+  for (auto fit = mesh.facesBegin(); fit != mesh.facesEnd(); fit++) {
+    fit->alreadySplitted = false;
   }
 }
 

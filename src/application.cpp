@@ -37,8 +37,6 @@ Application::Application(AppConfig config) {
   timestep = 0.1;
   damping_factor = 0.0;
 
-  readyWrite = false;
-  readyLoad = false;
   useCapsuleRadius = true;
 }
 
@@ -543,7 +541,7 @@ void Application::char_event(unsigned int codepoint) {
       switch (codepoint) {
         case 'u':
         case 'U':
-          scene->upsample_selected_mesh();
+          //scene->upsample_selected_mesh();/
           for (auto obj : scene->objects) {
             auto m = dynamic_cast<Mesh*>(obj);
             if (m) {
@@ -596,25 +594,12 @@ void Application::char_event(unsigned int codepoint) {
         case 'h':
           scene->selectHalfedge();
           break;
-        case 'w':
-        case 'W':
-          queueWrite();
-          queued = true;
-          break;
-        case 'l':
-        case 'L':
-          queueLoad();
-          queued = true;
-          break;
         default:
           break;
       }
       break;
   }
 
-  if (!queued) {
-    executeFileOp(codepoint);
-  }
   updateWidgets();
 }
 
@@ -626,76 +611,6 @@ void Application::reload()
 void Application::setDefaultSceneInfo(SceneInfo* sceneInfo)
 {
   defaultSceneInfo = sceneInfo;
-}
-
-void Application::queueWrite() {
-  readyWrite = true;
-  cerr << "(Press a key 0-9 to write to a buffer)" << endl;
-}
-
-void Application::queueLoad() {
-  readyLoad = true;
-  cerr << "(Press a key 0-9 to load from a buffer)" << endl;
-}
-
-void Application::executeFileOp(int codepoint) {
-  // If the user already pressed 'w' or 'l' (indicating that
-  // they wanted to write or load a file) AND the next key
-  // they pressed was a number, then we should go ahead and
-  // write/load the file corresponding to the specified number.
-
-  if (!readyLoad && !readyWrite) return;
-
-  // Convert Unicode codepoint to integer.  (Probably a more
-  // clever way to do this, but often a foolproof solution is
-  // (much) better than a clever one...)
-  int index = -1;
-  switch (codepoint) {
-    case '0':
-      index = 0;
-      break;
-    case '1':
-      index = 1;
-      break;
-    case '2':
-      index = 2;
-      break;
-    case '3':
-      index = 3;
-      break;
-    case '4':
-      index = 4;
-      break;
-    case '5':
-      index = 5;
-      break;
-    case '6':
-      index = 6;
-      break;
-    case '7':
-      index = 7;
-      break;
-    case '8':
-      index = 8;
-      break;
-    case '9':
-      index = 9;
-      break;
-    default:
-      readyLoad = readyWrite = false;
-      return;
-      break;
-  }
-
-  stringstream filename;
-  filename << "Scotty3D_buffer" << index << ".dae";
-
-  if (readyWrite)
-    writeScene(filename.str().c_str());
-  else if (readyLoad)
-    loadScene(filename.str().c_str());
-
-  readyLoad = readyWrite = false;
 }
 
 void Application::setGhosted(bool isGhosted) {

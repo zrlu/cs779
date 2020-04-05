@@ -439,7 +439,7 @@ class Face : public HalfedgeElement {
    * initializes the face, possibly setting its boundary flag
    * (by default, a Face does not encode a boundary loop)
    */
-  Face(bool isBoundary = false) : _isBoundary(isBoundary) {}
+  Face(bool isBoundary = false) : _isBoundary(isBoundary), subdivisionLevel(0), alreadySplitted(false) {}
 
   /**
    * Returns a reference to some halfedge of this face
@@ -511,6 +511,8 @@ class Face : public HalfedgeElement {
    * of some vertex in the new (subdivided) mesh.
    */
   Index index;
+  int subdivisionLevel;
+  bool alreadySplitted;
 
   /**
    * For subdivision, this will be the position for the face center

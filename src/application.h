@@ -245,10 +245,6 @@ class Application : public Renderer {
   // or 'l' and a number 0-9 to load.  If the file already exists
   // during write, it will be overwritten.  If the file does not
   // exist during load, nothing will happen.
-  bool readyWrite, readyLoad;
-  void queueWrite();
-  void queueLoad();
-  void executeFileOp(int codepoint);
 
   bool isGhosted;
   void setGhosted(bool isGhosted);
