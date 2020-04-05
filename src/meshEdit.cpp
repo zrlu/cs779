@@ -655,8 +655,9 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& fac
     } while (hIter != hBegin);
   }
 
-  std::cout << " vertices: " << vertices.size();
-  std::cout << " edges: " << edges.size();
+  cout << " faces: " << faces.size() << endl;
+  cout << " vertices: " << vertices.size() << endl;
+  cout << " edges: " << edges.size() << endl;
 
   //for (auto vit = mesh.verticesBegin(); vit != mesh.verticesEnd(); vit++) {
   for (auto v = vertices.begin(); v != vertices.end(); v++) {
@@ -676,7 +677,8 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& fac
         vit->newPosition += beta * nit->vertex()->position;
         nit = nit->next()->twin();
       } while (nit != nit_begin);
-    } else {
+    }
+    else {
       auto nit = vit->halfedge()->twin();
       auto a = nit->vertex()->position;
       while (!nit->isBoundary()) {
@@ -688,10 +690,9 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& fac
   }
 
   // Next, compute the updated vertex positions associated with edges.
+  //for (auto fit = mesh.facesBegin(); fit != mesh.facesEnd(); fit++) {
   for (auto e = edges.begin(); e != edges.end(); e++) {
     auto eit = *e;
-  //for (auto eit = mesh.edgesBegin(); eit != mesh.edgesEnd(); eit++) {
-
     if (!eit->isBoundary()) {
       Vector3D v0 = eit->halfedge()->vertex()->position;
       Vector3D v1 = eit->halfedge()->twin()->vertex()->position;
@@ -724,14 +725,6 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& fac
     eit->isNew = false;
     oldEitList.push_back(eit);
   }
-  
-  //auto oldEit = mesh.edgesBegin();
-  //do {
-  //  auto newIt = oldEit;
-  //  newIt->isNew = false;
-  //  oldEitList.push_back(newIt);
-  //  oldEit++;
-  //} while (oldEit != mesh.edgesEnd());
 
   for (auto e = oldEitList.begin(); e != oldEitList.end(); e++) {
     auto eit = *e;
@@ -762,23 +755,19 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& fac
     }
   }
 
-  // Copy the updated vertex positions to the subdivided mesh.
+  // Copy the updated vertex positions to the subdivided mesh
+  //for (auto vit = mesh.verticesBegin(); vit != mesh.verticesEnd(); vit++) {
   for (auto v = vertices.begin(); v != vertices.end(); v++) {
     auto vit = *v;
     vit->position = vit->newPosition;
   }
-  //for (auto vit = mesh.verticesBegin(); vit != mesh.verticesEnd(); vit++) {
-  //  vit->position = vit->newPosition;
-  //}
 
   // clear alreadySplitted flag
+  //for (auto fit = mesh.facesBegin(); fit != mesh.facesEnd(); fit++) {
   for (auto f = faces.begin(); f != faces.end(); f++) {
     auto fit = *f;
     fit->alreadySplitted = false;
   }
-  //for (auto fit = mesh.facesBegin(); fit != mesh.facesEnd(); fit++) {
-  //  fit->alreadySplitted = false;
-  //}
 }
 
 void MeshResampler::downsample(HalfedgeMesh& mesh) {
