@@ -134,9 +134,8 @@ int main(int argc, char** argv) {
   viewer.init();
 
   // load scene
+  app.setDefaultSceneInfo(sceneInfo);
   app.load(sceneInfo);
-
-  delete sceneInfo;
 
   // NOTE (sky): are we copying everything to dynamic scene? If so:
   // TODO (sky): check and make sure the destructor is freeing everything

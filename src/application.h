@@ -86,6 +86,9 @@ class Application : public Renderer {
   void mouse_event(int key, int event, unsigned char mods);
   void keyboard_event(int key, int event, unsigned char mods);
   void char_event(unsigned int codepoint);
+  void reload();
+  void setDefaultSceneInfo(Collada::SceneInfo* sceneInfo);
+  
 
   void load(Collada::SceneInfo* sceneInfo);
   void writeScene(const char* filename);
@@ -105,6 +108,7 @@ class Application : public Renderer {
   Action action;
 
   DynamicScene::Scene* scene;
+  Collada::SceneInfo* defaultSceneInfo;
 
   // View Frustrum Variables.
   // On resize, the aspect ratio is changed. On reset_camera, the position and

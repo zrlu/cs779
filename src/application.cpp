@@ -560,6 +560,10 @@ void Application::char_event(unsigned int codepoint) {
         //  // i for isotropic.
         //  scene->resample_selected_mesh();
         //  break;
+        case 'r':
+        case 'R':
+          reload();
+          break;
         case 'f':
         case 'F':
           scene->flip_selected_edge();
@@ -612,6 +616,16 @@ void Application::char_event(unsigned int codepoint) {
     executeFileOp(codepoint);
   }
   updateWidgets();
+}
+
+void Application::reload()
+{
+  load(defaultSceneInfo);
+}
+
+void Application::setDefaultSceneInfo(SceneInfo* sceneInfo)
+{
+  defaultSceneInfo = sceneInfo;
 }
 
 void Application::queueWrite() {
@@ -924,19 +938,6 @@ void Application::mouse2_dragged(float x, float y) {
   camera.move_by(-dx, dy, canonical_view_distance);
 
   updateWidgets();
-}
-
-static void reset_vertex_positions(DynamicScene::Mesh *m, bool to_animate_mode) {
-  auto begin = m->mesh.verticesBegin();
-  auto end = m->mesh.verticesEnd();
-  for (auto cur = begin; cur != end; ++cur) {
-    if (to_animate_mode)
-      // Reset the vertex positions to their bind positions so we can edit the model
-      cur->bindPosition = cur->position;
-    else
-      // Set the bind positions to their (potentially modified) positions in edit mode so they can get skinned
-      cur->position = cur->bindPosition;
-  }
 }
 
 Matrix4x4 Application::get_world_to_3DH() {
