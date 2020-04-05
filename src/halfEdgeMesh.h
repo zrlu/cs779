@@ -888,7 +888,6 @@ class HalfedgeMesh {
   VertexIter newVertex() { return vertices.insert(vertices.end(), Vertex()); }
   EdgeIter newEdge() { return edges.insert(edges.end(), Edge()); }
   FaceIter newFace() { return faces.insert(faces.end(), Face(false)); }
-  FaceIter newFace(bool isBoundary) { return faces.insert(faces.end(), Face(isBoundary)); }
   FaceIter newBoundary() {
     return boundaries.insert(boundaries.end(), Face(true));
   }

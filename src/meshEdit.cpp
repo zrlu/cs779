@@ -40,7 +40,6 @@ VertexIter HalfedgeMesh::splitEdge(EdgeIter e0) {
     EdgeIter e4 = newEdge();
 
     FaceIter f2 = newFace();
-    FaceIter f3 = newFace(true);
 
     if (!f0->getFace()->alreadySplitted) {
       f0->getFace()->subdivisionLevel += 1;
@@ -55,14 +54,11 @@ VertexIter HalfedgeMesh::splitEdge(EdgeIter e0) {
       f1->getFace()->alreadySplitted = true;
     }
 
-    f3->getFace()->subdivisionLevel = f1->getFace()->subdivisionLevel;
-    f3->getFace()->alreadySplitted = true;
-
     h0->setNeighbors(h9, h7, v0, e0, f0);
     h1->setNeighbors(h8, h4, v1, e1, f2);
     h2->setNeighbors(h0, h5, v2, e2, f0);
     h7->setNeighbors(h3->next(), h0, v3, e0, f1);
-    h3->setNeighbors(h7, h6, v1, e3, f3);
+    h3->setNeighbors(h7, h6, v1, e3, f1);
     h6->setNeighbors(h1, h3, v3, e3, f2);
     h8->setNeighbors(h6, h9, v2, e4, f2);
     h9->setNeighbors(h2, h8, v3, e4, f0);
@@ -71,13 +67,15 @@ VertexIter HalfedgeMesh::splitEdge(EdgeIter e0) {
     e1->halfedge() = h1;
     e2->halfedge() = h2;
     e3->halfedge() = h6;
-    e4->halfedge() = h8;
+    e4->halfedge() = h9;
 
     f0->halfedge() = h0;
-    f1->halfedge() = h6;
-    f2->halfedge() = h3;
-    f3->halfedge() = h7;
+    f1->halfedge() = h3;
+    f2->halfedge() = h6;
 
+    v0->halfedge() = v0->halfedge();
+    v1->halfedge() = h3;
+    v2->halfedge() = h4;
     v3->halfedge() = h7;
 
     return v3;
