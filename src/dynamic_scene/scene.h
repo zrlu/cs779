@@ -278,6 +278,8 @@ class Scene {
   void erase_selected_element();
   void erase_selected_joint();
 
+  void upsample_all_mesh();
+  void upsample_selected_face();
   void upsample_selected_mesh();
   void downsample_selected_mesh();
   void resample_selected_mesh();

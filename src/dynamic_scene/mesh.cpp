@@ -474,6 +474,18 @@ void Mesh::bevelComputeNewPositions(double inset, double shift) {
   scene->elementTransform->target.clear();
 }
 
+void Mesh::upsample_selected_face() {
+  if (scene == nullptr) return;
+  HalfedgeElement* element = scene->selected.element;
+  if (element == nullptr) return;
+  Face* face = element->getFace();
+  if (face == nullptr) return;
+  FaceIter f = face->halfedge()->face();
+  auto fl = list<FaceIter>();
+  fl.push_back(f);
+  resampler.upsampleSelectedFace(mesh, fl);
+}
+
 void Mesh::collapse_selected_element() {
   if (scene == nullptr) return;
   HalfedgeElement *element = scene->selected.element;

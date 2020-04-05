@@ -540,14 +540,10 @@ void Application::char_event(unsigned int codepoint) {
     case MODEL_MODE:
       switch (codepoint) {
         case 'u':
+          scene->upsample_selected_face();
+          break;
         case 'U':
-          //scene->upsample_selected_mesh();/
-          for (auto obj : scene->objects) {
-            auto m = dynamic_cast<Mesh*>(obj);
-            if (m) {
-              m->upsample();
-            }
-          }
+          scene->upsample_all_mesh();
           break;
         //case 'd':
         //case 'D':

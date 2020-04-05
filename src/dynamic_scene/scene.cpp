@@ -439,6 +439,23 @@ void Scene::erase_selected_joint() {
   }
 }
 
+void Scene::upsample_all_mesh() {
+  for (auto obj :objects) {
+    auto m = dynamic_cast<Mesh*>(obj);
+    if (m) {
+      m->upsample();
+    }
+  }
+  clearSelections();
+}
+
+void Scene::upsample_selected_face() {
+  if (selected.object == nullptr || selected.element == nullptr) return;
+  Mesh* m = dynamic_cast<Mesh*>(selected.object);
+  if (m) m->upsample_selected_face();
+  clearSelections();
+}
+
 void Scene::upsample_selected_mesh() {
   if (selected.object == nullptr || selected.element == nullptr) return;
   Mesh *m = dynamic_cast<Mesh *>(selected.object);

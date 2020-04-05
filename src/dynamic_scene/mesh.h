@@ -9,6 +9,7 @@
 #include "skeleton.h"
 
 #include <map>
+#include <list>
 
 namespace CMU462 {
 namespace DynamicScene {
@@ -54,6 +55,7 @@ class Mesh : public SceneObject {
   BSDF *get_bsdf();
   StaticScene::SceneObject *get_static_object() override;
 
+  void upsample_selected_face();
   void collapse_selected_element();
   void flip_selected_edge();
   void split_selected_edge();

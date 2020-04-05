@@ -655,9 +655,12 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& fac
     } while (hIter != hBegin);
   }
 
-  cout << " faces: " << faces.size() << endl;
-  cout << " vertices: " << vertices.size() << endl;
-  cout << " edges: " << edges.size() << endl;
+  cout << "upsampleSelectedFace begin" << endl;
+  cout << "--------------------------" << endl;
+  cout << "selected faces: " << faces.size() << endl;
+  cout << "selected vertices: " << vertices.size() << endl;
+  cout << "selected edges: " << edges.size() << endl;
+  cout << "--------------------------" << endl;
 
   //for (auto vit = mesh.verticesBegin(); vit != mesh.verticesEnd(); vit++) {
   for (auto v = vertices.begin(); v != vertices.end(); v++) {
@@ -768,6 +771,12 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& fac
     auto fit = *f;
     fit->alreadySplitted = false;
   }
+
+  cout << "--------------------------" << endl;
+  cout << "selected faces: " << faces.size() << endl;
+  cout << "selected vertices: " << vertices.size() << endl;
+  cout << "selected edges: " << edges.size() << endl;
+  cout << "--------------------------" << endl;
 }
 
 void MeshResampler::downsample(HalfedgeMesh& mesh) {
