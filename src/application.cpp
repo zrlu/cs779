@@ -544,6 +544,12 @@ void Application::char_event(unsigned int codepoint) {
         case 'u':
         case 'U':
           scene->upsample_selected_mesh();
+          for (auto obj : scene->objects) {
+            auto m = dynamic_cast<Mesh*>(obj);
+            if (m) {
+              m->upsample();
+            }
+          }
           break;
         //case 'd':
         //case 'D':

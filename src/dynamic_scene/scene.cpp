@@ -460,15 +460,6 @@ void Scene::resample_selected_mesh() {
   clearSelections();
 }
 
-void Scene::upsample_all_mesh()
-{
-	if (selected.object == nullptr || selected.element == nullptr) return;
-	for (SceneObject* obj : objects) {
-		Mesh* m = dynamic_cast<Mesh*>(obj);
-		if (m) m->upsample();
-	}
-}
-
 StaticScene::Scene *Scene::get_static_scene() {
   std::vector<StaticScene::SceneObject *> staticObjects;
   std::vector<StaticScene::SceneLight *> staticLights;

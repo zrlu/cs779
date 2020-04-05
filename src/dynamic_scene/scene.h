@@ -282,8 +282,6 @@ class Scene {
   void downsample_selected_mesh();
   void resample_selected_mesh();
 
-  void upsample_all_mesh();
-
   void selectNextHalfedge();
   void selectTwinHalfedge();
   void selectHalfedge();
