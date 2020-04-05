@@ -633,82 +633,77 @@ EdgeRecord::EdgeRecord(EdgeIter& _edge) : edge(_edge) {
   //    EdgeRecord::Cost.
 }
 
-void MeshResampler::upsample(HalfedgeMesh& mesh)
-// This routine should increase the number of triangles in the mesh using Loop
-// subdivision.
-{
-  // TODO: (meshEdit)
-  // Compute new positions for all the vertices in the input mesh, using
-  // the Loop subdivision rule, and store them in Vertex::newPosition.
-  // -> At this point, we also want to mark each vertex as being a vertex of the
-  //    original mesh.
-  // -> Next, compute the updated vertex positions associated with edges, and
-  //    store it in Edge::newPosition.
-  // -> Next, we're going to split every edge in the mesh, in any order.  For
-  //    future reference, we're also going to store some information about which
-  //    subdivided edges come from splitting an edge in the original mesh, and
-  //    which edges are new, by setting the flat Edge::isNew. Note that in this
-  //    loop, we only want to iterate over edges of the original mesh.
-  //    Otherwise, we'll end up splitting edges that we just split (and the
-  //    loop will never end!)
-  // -> Now flip any new edge that connects an old and new vertex.
-  // -> Finally, copy the new vertex positions into final Vertex::position.
+void MeshResampler::upsample(HalfedgeMesh& mesh) {
+  list<FaceIter> faces;
+  for (auto fit = mesh.facesBegin(); fit != mesh.facesEnd(); fit++) {
+    faces.push_back(fit);
+  }
+  upsampleSelectedFace(mesh, faces);
+}
 
-  // Each vertex and edge of the original surface can be associated with a
-  // vertex in the new (subdivided) surface.
-  // Therefore, our strategy for computing the subdivided vertex locations is to
-  // *first* compute the new positions
-  // using the connectity of the original (coarse) mesh; navigating this mesh
-  // will be much easier than navigating
-  // the new subdivided (fine) mesh, which has more elements to traverse.  We
-  // will then assign vertex positions in
-  // the new mesh based on the values we computed for the original mesh.
+void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& faces) {
+  set<VertexIter> vertices;
+  set<EdgeIter> edges;
 
-  // Compute updated positions for all the vertices in the original mesh, using
-  // the Loop subdivision rule.
-  for (auto vit = mesh.verticesBegin(); vit != mesh.verticesEnd(); vit++) {
-	vit->isNew = false;
-	if (!vit->isBoundary()) {
+  for (auto f : faces) {
+    auto hBegin = f->halfedge();
+    auto hIter = hBegin;
+    do {
+      edges.insert(hIter->edge());
+      vertices.insert(hIter->vertex());
+      hIter = hIter->next();
+    } while (hIter != hBegin);
+  }
 
-	  auto he = vit->halfedge();
-	  Size k = vit->degree();
-	  float beta = (k == 3 ? 3.0 / 16.0 : 3.0 / (8.0 * k));
-	  vit->newPosition = (1.0 - double(k) * beta) * vit->position;
+  std::cout << " vertices: " << vertices.size();
+  std::cout << " edges: " << edges.size();
 
-	  auto nit_begin = vit->halfedge()->twin();
-	  auto nit = nit_begin;
+  //for (auto vit = mesh.verticesBegin(); vit != mesh.verticesEnd(); vit++) {
+  for (auto v = vertices.begin(); v != vertices.end(); v++) {
+    auto vit = *v;
+    vit->isNew = false;
+    if (!vit->isBoundary()) {
 
-	  do {
-		  vit->newPosition += beta * nit->vertex()->position;
-		  nit = nit->next()->twin();
-	  } while (nit != nit_begin);
-	}
-	else {
+      auto he = vit->halfedge();
+      Size k = vit->degree();
+      float beta = (k == 3 ? 3.0 / 16.0 : 3.0 / (8.0 * k));
+      vit->newPosition = (1.0 - double(k) * beta) * vit->position;
+
+      auto nit_begin = vit->halfedge()->twin();
+      auto nit = nit_begin;
+
+      do {
+        vit->newPosition += beta * nit->vertex()->position;
+        nit = nit->next()->twin();
+      } while (nit != nit_begin);
+    } else {
       auto nit = vit->halfedge()->twin();
       auto a = nit->vertex()->position;
       while (!nit->isBoundary()) {
         nit = nit->next()->twin();
       }
       auto b = nit->vertex()->position;
-      // std::cout << a << " " << v << " " << b << std::endl;
-	  vit->newPosition = (a + b) / 8.0 + (3.0 / 4.0) * vit->position;
-	}
+      vit->newPosition = (a + b) / 8.0 + (3.0 / 4.0) * vit->position;
+    }
   }
 
   // Next, compute the updated vertex positions associated with edges.
-  for (auto eit = mesh.edgesBegin(); eit != mesh.edgesEnd(); eit++)
-  {
-	if (!eit->isBoundary()) {
-	  Vector3D v0 = eit->halfedge()->vertex()->position;
-	  Vector3D v1 = eit->halfedge()->twin()->vertex()->position;
-	  Vector3D v2 = eit->halfedge()->next()->twin()->vertex()->position;
-	  Vector3D v3 = eit->halfedge()->twin()->next()->twin()->vertex()->position;
-	  eit->newPosition = v0 * 3.0 / 8.0 + v1 * 3.0 / 8.0 + v2 * 1.0 / 8.0 + v3 * 1.0 / 8.0;
-	} else {
+  for (auto e = edges.begin(); e != edges.end(); e++) {
+    auto eit = *e;
+  //for (auto eit = mesh.edgesBegin(); eit != mesh.edgesEnd(); eit++) {
+
+    if (!eit->isBoundary()) {
       Vector3D v0 = eit->halfedge()->vertex()->position;
       Vector3D v1 = eit->halfedge()->twin()->vertex()->position;
-	  eit->newPosition = (v0 + v1) / 2.0;
-	}
+      Vector3D v2 = eit->halfedge()->next()->twin()->vertex()->position;
+      Vector3D v3 = eit->halfedge()->twin()->next()->twin()->vertex()->position;
+      eit->newPosition = v0 * 3.0 / 8.0 + v1 * 3.0 / 8.0 + v2 * 1.0 / 8.0 + v3 * 1.0 / 8.0;
+    }
+    else {
+      Vector3D v0 = eit->halfedge()->vertex()->position;
+      Vector3D v1 = eit->halfedge()->twin()->vertex()->position;
+      eit->newPosition = (v0 + v1) / 2.0;
+    }
   }
 
   // Next, we're going to split every edge in the mesh, in any order.  For
@@ -724,43 +719,66 @@ void MeshResampler::upsample(HalfedgeMesh& mesh)
 
   // copy original edge to a linked-list
   list<EdgeIter> oldEitList;
-  auto oldEit = mesh.edgesBegin();
-  do {
-	auto newIt = oldEit;
-	newIt->isNew = false;
-	oldEitList.push_back(newIt);
-	oldEit++;
-  } while (oldEit != mesh.edgesEnd());
+  for (auto e = edges.begin(); e != edges.end(); e++) {
+    auto eit = *e;
+    eit->isNew = false;
+    oldEitList.push_back(eit);
+  }
+  
+  //auto oldEit = mesh.edgesBegin();
+  //do {
+  //  auto newIt = oldEit;
+  //  newIt->isNew = false;
+  //  oldEitList.push_back(newIt);
+  //  oldEit++;
+  //} while (oldEit != mesh.edgesEnd());
 
-  for (auto it = oldEitList.begin(); it != oldEitList.end(); it++) {
-	auto m = mesh.splitEdge(*it);
-	m->isNew = true;
-	m->newPosition = (*it)->newPosition;
+  for (auto e = oldEitList.begin(); e != oldEitList.end(); e++) {
+    auto eit = *e;
+    auto m = mesh.splitEdge(eit);
+    m->isNew = true;
+    m->newPosition = (*e)->newPosition;
+    vertices.insert(m);
 
-	auto newHalfedgeIt = m->halfedge();
+    auto newHalfedgeIt = m->halfedge();
 
-	newHalfedgeIt->edge()->isNew = false;
-	newHalfedgeIt->twin()->next()->edge()->isNew = true;
-	newHalfedgeIt->twin()->next()->twin()->next()->edge()->isNew = false;
-	newHalfedgeIt->next()->next()->edge()->isNew = true;
+    newHalfedgeIt->edge()->isNew = false;
+    newHalfedgeIt->twin()->next()->edge()->isNew = true;
+    newHalfedgeIt->twin()->next()->twin()->next()->edge()->isNew = false;
+    newHalfedgeIt->next()->next()->edge()->isNew = true;
+
+    edges.insert(newHalfedgeIt->twin()->next()->edge());
+    edges.insert(newHalfedgeIt->twin()->next()->twin()->next()->edge());
+    edges.insert(newHalfedgeIt->next()->next()->edge());
   }
 
   // Finally, flip any new edge that connects an old and new vertex.
-  for (auto eit = mesh.edgesBegin(); eit != mesh.edgesEnd(); eit++) {
-	if (eit->halfedge()->vertex()->isNew != eit->halfedge()->twin()->vertex()->isNew && eit->isNew) {
-	  mesh.flipEdge(eit);
-	}
+
+  //for (auto eit = mesh.edgesBegin(); eit != mesh.edgesEnd(); eit++) {
+  for (auto e = edges.begin(); e != edges.end(); e++) {
+    auto eit = *e;
+    if (eit->halfedge()->vertex()->isNew != eit->halfedge()->twin()->vertex()->isNew && eit->isNew) {
+      mesh.flipEdge(eit);
+    }
   }
 
   // Copy the updated vertex positions to the subdivided mesh.
-  for (auto vit = mesh.verticesBegin(); vit != mesh.verticesEnd(); vit++) {
-	vit->position = vit->newPosition;
+  for (auto v = vertices.begin(); v != vertices.end(); v++) {
+    auto vit = *v;
+    vit->position = vit->newPosition;
   }
+  //for (auto vit = mesh.verticesBegin(); vit != mesh.verticesEnd(); vit++) {
+  //  vit->position = vit->newPosition;
+  //}
 
   // clear alreadySplitted flag
-  for (auto fit = mesh.facesBegin(); fit != mesh.facesEnd(); fit++) {
+  for (auto f = faces.begin(); f != faces.end(); f++) {
+    auto fit = *f;
     fit->alreadySplitted = false;
   }
+  //for (auto fit = mesh.facesBegin(); fit != mesh.facesEnd(); fit++) {
+  //  fit->alreadySplitted = false;
+  //}
 }
 
 void MeshResampler::downsample(HalfedgeMesh& mesh) {
