@@ -935,7 +935,7 @@ class HalfedgeMesh {
    * mesh
    */
   VertexIter splitEdge(EdgeIter e);
-
+  VertexIter splitEdge(EdgeIter e, list<VertexIter> &newVertices, list<EdgeIter> &newEdges, list<FaceIter> &newFaces);
   /**
    * Collapse an edge, returning a pointer to the collapsed vertex
    */

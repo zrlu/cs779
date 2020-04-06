@@ -13,6 +13,15 @@ VertexIter HalfedgeMesh::splitEdge(EdgeIter e0) {
   // newly inserted vertex. The halfedge of this vertex should point along
   // the edge that was split, rather than the new edges.
 
+  list<VertexIter> newVertices;
+  list<EdgeIter> newEdges;
+  list<FaceIter> newFaces;
+
+  return splitEdge(e0, newVertices, newEdges, newFaces);
+}
+
+VertexIter HalfedgeMesh::splitEdge(EdgeIter e0, list<VertexIter>& newVertices, list<EdgeIter>& newEdges, list<FaceIter>& newFaces)
+{
   FaceIter f0 = e0->halfedge()->face();
   FaceIter f1 = e0->halfedge()->twin()->face();
 
@@ -27,19 +36,23 @@ VertexIter HalfedgeMesh::splitEdge(EdgeIter e0) {
     HalfedgeIter h7 = newHalfedge();
     HalfedgeIter h8 = newHalfedge();
     HalfedgeIter h9 = newHalfedge();
-  
+
     VertexIter v0 = h0->vertex();
     VertexIter v1 = h1->vertex();
     VertexIter v2 = h2->vertex();
     VertexIter v3 = newVertex();
     v3->position = (v0->position + v1->position) / 2;
+    newVertices.push_back(v3);
 
     EdgeIter e1 = h1->edge();
     EdgeIter e2 = h2->edge();
     EdgeIter e3 = newEdge();
     EdgeIter e4 = newEdge();
+    newEdges.push_back(e3);
+    newEdges.push_back(e4);
 
     FaceIter f2 = newFace();
+    newFaces.push_back(f2);
 
     if (!f0->getFace()->alreadySplitted) {
       f0->getFace()->subdivisionLevel += 1;
@@ -48,11 +61,6 @@ VertexIter HalfedgeMesh::splitEdge(EdgeIter e0) {
 
     f2->getFace()->subdivisionLevel = f0->getFace()->subdivisionLevel;
     f2->getFace()->alreadySplitted = true;
-
-    if (!f1->getFace()->alreadySplitted) {
-      f1->getFace()->subdivisionLevel += 1;
-      f1->getFace()->alreadySplitted = true;
-    }
 
     h0->setNeighbors(h9, h7, v0, e0, f0);
     h1->setNeighbors(h8, h4, v1, e1, f2);
@@ -110,9 +118,14 @@ VertexIter HalfedgeMesh::splitEdge(EdgeIter e0) {
   EdgeIter e5 = newEdge();
   EdgeIter e6 = newEdge();
   EdgeIter e7 = newEdge();
+  newEdges.push_back(e5);
+  newEdges.push_back(e6);
+  newEdges.push_back(e7);
 
   FaceIter f2 = newFace();
   FaceIter f3 = newFace();
+  newFaces.push_back(f2);
+  newFaces.push_back(f3);
 
   if (!f0->getFace()->alreadySplitted) {
     f0->getFace()->subdivisionLevel += 1;
@@ -132,6 +145,8 @@ VertexIter HalfedgeMesh::splitEdge(EdgeIter e0) {
 
   VertexIter v4 = newVertex();
   v4->position = (v0->position + v1->position) / 2;
+  newVertices.push_back(v4);
+
 
   h0->setNeighbors(h1, h3, v4, e0, f0);
   h1->setNeighbors(h10, h6, v1, e1, f0);
@@ -641,9 +656,12 @@ void MeshResampler::upsample(HalfedgeMesh& mesh) {
   upsampleSelectedFace(mesh, faces);
 }
 
-void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& faces) {
+void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& _faces) {
   set<VertexIter> vertices;
   set<EdgeIter> edges;
+  set<FaceIter> faces;
+
+  copy(_faces.begin(), _faces.end(), std::inserter(faces, faces.begin()));
 
   for (auto f : faces) {
     auto hBegin = f->halfedge();
@@ -723,6 +741,10 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& fac
 
   // copy original edge to a linked-list
   list<EdgeIter> oldEitList;
+  list<VertexIter> newVertices;
+  list<EdgeIter> newEdges;
+  list<FaceIter> newFaces;
+
   for (auto e = edges.begin(); e != edges.end(); e++) {
     auto eit = *e;
     eit->isNew = false;
@@ -731,7 +753,7 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& fac
 
   for (auto e = oldEitList.begin(); e != oldEitList.end(); e++) {
     auto eit = *e;
-    auto m = mesh.splitEdge(eit);
+    auto m = mesh.splitEdge(eit, newVertices, newEdges, newFaces);
     m->isNew = true;
     m->newPosition = (*e)->newPosition;
     vertices.insert(m);
@@ -765,8 +787,12 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& fac
     vit->position = vit->newPosition;
   }
 
+  copy(newVertices.begin(), newVertices.end(), std::inserter(vertices, vertices.end()));
+  copy(newEdges.begin(), newEdges.end(), std::inserter(edges, edges.end()));
+  copy(newFaces.begin(), newFaces.end(), std::inserter(faces, faces.end()));
+
   // clear alreadySplitted flag
-  //for (auto fit = mesh.facesBegin(); fit != mesh.facesEnd(); fit++) {
+//for (auto fit = mesh.facesBegin(); fit != mesh.facesEnd(); fit++) {
   for (auto f = faces.begin(); f != faces.end(); f++) {
     auto fit = *f;
     fit->alreadySplitted = false;
@@ -777,6 +803,8 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& fac
   cout << "selected vertices: " << vertices.size() << endl;
   cout << "selected edges: " << edges.size() << endl;
   cout << "--------------------------" << endl;
+  cout << "upsampleSelectedFace end" << endl;
+
 }
 
 void MeshResampler::downsample(HalfedgeMesh& mesh) {

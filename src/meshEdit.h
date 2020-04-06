@@ -4,6 +4,8 @@
 #include "halfEdgeMesh.h"
 #include <set>
 #include <list>
+#include <algorithm>
+#include <iterator>
 
 using namespace std;
 
