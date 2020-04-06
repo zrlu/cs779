@@ -749,10 +749,7 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& _fa
   list<EdgeIter> newEdges;
   list<FaceIter> newFaces;
 
-  for (auto eit: edges) {
-    eit->isNew = false;
-    oldEitList.push_back(eit);
-  }
+  copy(edges.begin(), edges.end(), std::back_inserter(oldEitList));
 
   for (auto eit: oldEitList) {
     auto m = mesh.splitEdge(eit, newVertices, newEdges, newFaces);
