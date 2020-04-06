@@ -804,17 +804,19 @@ Info Vertex::getInfo() {
 Info Edge::getInfo() {
   Info info;
 
-  ostringstream m1, m2, m3, m4;
+  ostringstream m1, m2, m3, m4, m5;
   m1 << "EDGE";
   m2 << "Address: " << this;
   m3 << "Halfedge: " << elementAddress(halfedge());
   m4 << "Boundary: " << (isBoundary() ? "YES" : "NO");
+  m5 << "Flipped: " << (flipped ? "YES" : "NO");
 
-  info.reserve(4);
+  info.reserve(5);
   info.push_back(m1.str());
   info.push_back(m2.str());
   info.push_back(m3.str());
   info.push_back(m4.str());
+  info.push_back(m5.str());
 
   return info;
 }

@@ -142,7 +142,7 @@ void Application::initialize_style() {
   selectStyle.jointColor = COLOR_SELECT;
 
   // Primitive sizes.
-  defaultStyle.strokeWidth = 1.0;
+  defaultStyle.strokeWidth = 0.5;
   hoverStyle.strokeWidth = 2.0;
   selectStyle.strokeWidth = 2.0;
 
@@ -477,9 +477,9 @@ void Application::init_material(MaterialInfo &material) {
 }
 
 void Application::cursor_event(float x, float y) {
-  if (leftDown && !middleDown && !rightDown) {
+  if (leftDown) {
     mouse1_dragged(x, y);
-  } else if (!leftDown && !middleDown && rightDown) {
+  } else if (middleDown || rightDown) {
     mouse2_dragged(x, y);
   }
 

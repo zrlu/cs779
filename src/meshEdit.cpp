@@ -230,105 +230,111 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
   FaceIter f0 = e0->halfedge()->face();
   FaceIter f1 = e0->halfedge()->twin()->face();
 
-  if (f1->isBoundary())
-  {
-	  return e0;
+  if (f1->isBoundary()) {
+    return e0;
   }
+  if (!e0->flipped) {
+    HalfedgeIter h0 = e0->halfedge();
+    HalfedgeIter h1 = h0->next();
+    HalfedgeIter h2 = h1->next();
+    HalfedgeIter h3 = h0->twin();
+    HalfedgeIter h4 = h3->next();
+    HalfedgeIter h5 = h4->next();
 
-  HalfedgeIter h0 = e0->halfedge();
-  HalfedgeIter h1 = h0->next();
-  HalfedgeIter h2 = h1->next();
-  HalfedgeIter h3 = h0->twin();
-  HalfedgeIter h4 = h3->next();
-  HalfedgeIter h5 = h4->next();
-  HalfedgeIter h6 = h1->twin();
-  HalfedgeIter h7 = h2->twin();
-  HalfedgeIter h8 = h4->twin();
-  HalfedgeIter h9 = h5->twin();
+    HalfedgeIter h6 = h1->twin();
+    HalfedgeIter h7 = h2->twin();
+    HalfedgeIter h8 = h4->twin();
+    HalfedgeIter h9 = h5->twin();
 
-  VertexIter v0 = h0->vertex();
-  VertexIter v1 = h3->vertex();
-  VertexIter v2 = h6->vertex();
-  VertexIter v3 = h8->vertex();
+    VertexIter v0 = h0->vertex();
+    VertexIter v1 = h3->vertex();
+    VertexIter v2 = h6->vertex();
+    VertexIter v3 = h8->vertex();
 
-  EdgeIter e1 = h1->edge();
-  EdgeIter e2 = h2->edge();
-  EdgeIter e3 = h4->edge();
-  EdgeIter e4 = h5->edge();
+    EdgeIter e1 = h1->edge();
+    EdgeIter e2 = h2->edge();
+    EdgeIter e3 = h4->edge();
+    EdgeIter e4 = h5->edge();
 
-  h0->next() = h1;
-  h0->twin() = h3;
-  h0->face() = f0;
-  h0->vertex() = v3;
-  h0->edge() = e0;
+    h0->setNeighbors(h1, h3, v3, e0, f0);
+    h1->setNeighbors(h2, h7, v2, e2, f0);
+    h2->setNeighbors(h0, h8, v0, e3, f0);
 
-  h1->next() = h2;
-  h1->twin() = h7;
-  h1->face() = f0;
-  h1->vertex() = v2;
-  h1->edge() = e2;
+    h3->setNeighbors(h4, h0, v2, e0, f1);
+    h4->setNeighbors(h5, h9, v3, e4, f1);
+    h5->setNeighbors(h3, h6, v1, e1, f1);
 
-  h2->next() = h0;
-  h2->twin() = h8;
-  h2->face() = f0;
-  h2->vertex() = v0;
-  h2->edge() = e3;
+    h6->twin() = h5;
+    h7->twin() = h1;
+    h8->twin() = h2;
+    h9->twin() = h4;
 
-  h3->next() = h4;
-  h3->twin() = h0;
-  h3->face() = f1;
-  h3->vertex() = v2;
-  h3->edge() = e0;
+    v0->halfedge() = h7;
+    v1->halfedge() = h9;
+    v2->halfedge() = h6;
+    v3->halfedge() = h8;
 
-  h4->next() = h5;
-  h4->twin() = h9;
-  h4->face() = f1;
-  h4->vertex() = v3;
-  h4->edge() = e4;
+    e0->halfedge() = h0;
+    e1->halfedge() = h5;
+    e2->halfedge() = h1;
+    e3->halfedge() = h2;
+    e4->halfedge() = h4;
 
-  h5->next() = h3;
-  h5->twin() = h6;
-  h5->face() = f1;
-  h5->vertex() = v1;
-  h5->edge() = e1;
+    f0->halfedge() = h0;
+    f1->halfedge() = h3;
 
-  h6->next() = h6->next();
-  h6->twin() = h5;
-  h6->face() = h6->face();
-  h6->vertex() = v2;
-  h6->edge() = e1;
+    e0->flipped = true;
+  } else {
+    HalfedgeIter h0 = e0->halfedge();
+    HalfedgeIter h1 = h0->next();
+    HalfedgeIter h2 = h1->next();
+    HalfedgeIter h3 = h0->twin();
+    HalfedgeIter h4 = h3->next();
+    HalfedgeIter h5 = h4->next();
+    HalfedgeIter h6 = h5->twin();
+    HalfedgeIter h7 = h1->twin();
+    HalfedgeIter h8 = h2->twin();
+    HalfedgeIter h9 = h4->twin();
 
-  h7->next() = h7->next();
-  h7->twin() = h1;
-  h7->face() = h7->face();
-  h7->vertex() = v0;
-  h7->edge() = e2;
+    VertexIter v0 = h7->vertex();
+    VertexIter v1 = h9->vertex();
+    VertexIter v2 = h6->vertex();
+    VertexIter v3 = h8->vertex();
 
-  h8->next() = h8->next();
-  h8->twin() = h2;
-  h8->face() = h8->face();
-  h8->vertex() = v3;
-  h8->edge() = e3;
+    EdgeIter e1 = h5->edge();
+    EdgeIter e2 = h1->edge();
+    EdgeIter e3 = h2->edge();
+    EdgeIter e4 = h4->edge();
 
-  h9->next() = h9->next();
-  h9->twin() = h4;
-  h9->face() = h9->face();
-  h9->vertex() = v1;
-  h9->edge() = e4;
+    h0->setNeighbors(h1, h3, v0, e0, f0);
+    h1->setNeighbors(h2, h6, v1, e1, f0);
+    h2->setNeighbors(h0, h7, v2, e2, f0);
 
-  v0->halfedge() = h2;
-  v1->halfedge() = h5;
-  v2->halfedge() = h3;
-  v3->halfedge() = h0;
+    h3->setNeighbors(h4, h0, v1, e0, f1);
+    h4->setNeighbors(h5, h8, v0, e3, f1);
+    h5->setNeighbors(h3, h9, v3, e4, f1);
 
-  e0->halfedge() = h0;
-  e1->halfedge() = h5;
-  e2->halfedge() = h1;
-  e3->halfedge() = h2;
-  e4->halfedge() = h4;
+    h6->twin() = h1;
+    h7->twin() = h2;
+    h8->twin() = h4;
+    h9->twin() = h5;
 
-  f0->halfedge() = h0;
-  f1->halfedge() = h3;
+    v0->halfedge() = h7;
+    v1->halfedge() = h9;
+    v2->halfedge() = h6;
+    v3->halfedge() = h8;
+
+    e0->halfedge() = h0;
+    e1->halfedge() = h6;
+    e2->halfedge() = h7;
+    e3->halfedge() = h8;
+    e4->halfedge() = h9;
+
+    f0->halfedge() = h0;
+    f1->halfedge() = h3;
+
+    e0->flipped = false;
+  }
 
   return e0;
 }
@@ -681,8 +687,7 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& _fa
   cout << "--------------------------" << endl;
 
   //for (auto vit = mesh.verticesBegin(); vit != mesh.verticesEnd(); vit++) {
-  for (auto v = vertices.begin(); v != vertices.end(); v++) {
-    auto vit = *v;
+  for (auto vit: vertices) {
     vit->isNew = false;
     if (!vit->isBoundary()) {
 
@@ -712,8 +717,7 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& _fa
 
   // Next, compute the updated vertex positions associated with edges.
   //for (auto fit = mesh.facesBegin(); fit != mesh.facesEnd(); fit++) {
-  for (auto e = edges.begin(); e != edges.end(); e++) {
-    auto eit = *e;
+  for (auto eit: edges) {
     if (!eit->isBoundary()) {
       Vector3D v0 = eit->halfedge()->vertex()->position;
       Vector3D v1 = eit->halfedge()->twin()->vertex()->position;
@@ -745,17 +749,15 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& _fa
   list<EdgeIter> newEdges;
   list<FaceIter> newFaces;
 
-  for (auto e = edges.begin(); e != edges.end(); e++) {
-    auto eit = *e;
+  for (auto eit: edges) {
     eit->isNew = false;
     oldEitList.push_back(eit);
   }
 
-  for (auto e = oldEitList.begin(); e != oldEitList.end(); e++) {
-    auto eit = *e;
+  for (auto eit: oldEitList) {
     auto m = mesh.splitEdge(eit, newVertices, newEdges, newFaces);
     m->isNew = true;
-    m->newPosition = (*e)->newPosition;
+    m->newPosition = eit->newPosition;
     vertices.insert(m);
 
     auto newHalfedgeIt = m->halfedge();
@@ -771,10 +773,8 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& _fa
   }
 
   // Finally, flip any new edge that connects an old and new vertex.
-
   //for (auto eit = mesh.edgesBegin(); eit != mesh.edgesEnd(); eit++) {
-  for (auto e = edges.begin(); e != edges.end(); e++) {
-    auto eit = *e;
+  for (auto eit: edges) {
     if (eit->halfedge()->vertex()->isNew != eit->halfedge()->twin()->vertex()->isNew && eit->isNew) {
       mesh.flipEdge(eit);
     }
@@ -782,8 +782,7 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& _fa
 
   // Copy the updated vertex positions to the subdivided mesh
   //for (auto vit = mesh.verticesBegin(); vit != mesh.verticesEnd(); vit++) {
-  for (auto v = vertices.begin(); v != vertices.end(); v++) {
-    auto vit = *v;
+  for (auto vit :vertices) {
     vit->position = vit->newPosition;
   }
 
@@ -793,9 +792,19 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& _fa
 
   // clear alreadySplitted flag
 //for (auto fit = mesh.facesBegin(); fit != mesh.facesEnd(); fit++) {
-  for (auto f = faces.begin(); f != faces.end(); f++) {
-    auto fit = *f;
+  for (auto fit : faces) {
     fit->alreadySplitted = false;
+  }
+
+  // fix halfedge at border
+  for (auto eit : edges) {
+    if (eit->isBoundary()) {
+      auto he = eit->halfedge()->twin();
+      auto v = he->vertex();
+      if (v->halfedge() != he) {
+        v->halfedge() = he;
+      }
+    }
   }
 
   cout << "--------------------------" << endl;

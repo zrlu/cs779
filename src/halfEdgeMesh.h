@@ -440,7 +440,6 @@ class Face : public HalfedgeElement {
    * (by default, a Face does not encode a boundary loop)
    */
   Face(bool isBoundary = false) : _isBoundary(isBoundary), subdivisionLevel(0), alreadySplitted(false) {}
-
   /**
    * Returns a reference to some halfedge of this face
    */
@@ -717,6 +716,7 @@ class Edge : public HalfedgeElement {
   HalfedgeCIter halfedge() const { return _halfedge; }
 
   bool isBoundary();
+  bool flipped = false;
 
   double length() const {
     Vector3D p0 = halfedge()->vertex()->position;
@@ -771,7 +771,6 @@ class Edge : public HalfedgeElement {
    * in the original mesh)
    */
   bool isNew;
-
   EdgeRecord record;
 
  protected:
@@ -1074,5 +1073,4 @@ inline Edge* HalfedgeElement::getEdge() { return dynamic_cast<Edge*>(this); }
 inline Face* HalfedgeElement::getFace() { return dynamic_cast<Face*>(this); }
 
 }  // End of CMU 462 namespace.
-
 #endif  // CMU462_HALFEDGEMESH_H
