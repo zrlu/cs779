@@ -696,13 +696,15 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& _fa
       float beta = (k == 3 ? 3.0 / 16.0 : 3.0 / (8.0 * k));
       vit->newPosition = (1.0 - double(k) * beta) * vit->position;
 
-      auto nit_begin = vit->halfedge()->twin();
-      auto nit = nit_begin;
+      map<HalfedgeIter, double> N;
 
-      do {
-        vit->newPosition += beta * nit->vertex()->position;
-        nit = nit->next()->twin();
-      } while (nit != nit_begin);
+      vit->getNeighborhood(N);
+      N.erase(vit->halfedge()); // remove this vertex
+
+      for (auto nbr : N) {
+        vit->newPosition += beta * nbr.first->vertex()->position;
+      }
+
     }
     else {
       auto nit = vit->halfedge()->twin();
@@ -726,9 +728,7 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& _fa
       eit->newPosition = v0 * 3.0 / 8.0 + v1 * 3.0 / 8.0 + v2 * 1.0 / 8.0 + v3 * 1.0 / 8.0;
     }
     else {
-      Vector3D v0 = eit->halfedge()->vertex()->position;
-      Vector3D v1 = eit->halfedge()->twin()->vertex()->position;
-      eit->newPosition = (v0 + v1) / 2.0;
+      eit->newPosition = eit->centroid();
     }
   }
 
