@@ -566,7 +566,7 @@ class Vertex : public HalfedgeElement {
    */
   bool isNew;
 
-  bool selectedForSubdivision = false;
+  bool selectedForSubdivision;
 
   /**
    * Translate this vertex by a specified vector u.
@@ -594,6 +594,8 @@ class Vertex : public HalfedgeElement {
    */
   void smoothNeighborhood(double diff, map<HalfedgeIter, double>& seen,
                           int depth = 1);
+
+  Vector3D baryentric(VertexIter v0, VertexIter v1, VertexIter v2);
 
   /**
    * Return principal axes, where the third (Z) direction is parallel

@@ -548,6 +548,25 @@ void Vertex::smoothNeighborhood(double diff, map<HalfedgeIter, double>& seen,
   }
 }
 
+Vector3D Vertex::baryentric(VertexIter v0, VertexIter v1, VertexIter v2)
+{
+  Vector3D vec0 = v1->position - v0->position;
+  Vector3D vec1 = v2->position - v0->position;
+  Vector3D vec2 = position - v0->position;
+
+  double u, v, w;
+  double d00 = vec0.norm2();
+  double d01 = dot(vec0, vec1);
+  double d11 = vec2.norm2();
+  double d20 = dot(vec2, vec0);
+  double d21 = dot(vec2, vec1);
+  double denom = d00 * d11 - d01 * d01;
+  v = (d11 * d20 - d01 * d21) / denom;
+  w = (d00 * d21 - d01 * d20) / denom;
+  u = 1.0f - v - w;
+  return { u, v, w };
+}
+
 Vector3D Edge::centroid() const {
   return (halfedge()->vertex()->position +
           halfedge()->twin()->vertex()->position) /
