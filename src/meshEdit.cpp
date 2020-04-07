@@ -829,9 +829,9 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& _fa
   }
 
   // clear flipped flag
- /* for (auto eit : edges) {
+  for (auto eit : edges) {
     eit->flipped = false;
-  }*/
+  }
 
   cout << "--------------------------" << endl;
   cout << "selected faces: " << faces.size() << endl;
