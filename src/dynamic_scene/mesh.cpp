@@ -482,7 +482,10 @@ void Mesh::upsample_selected_face() {
   if (face == nullptr) return;
   FaceIter f = face->halfedge()->face();
   auto fl = list<FaceIter>();
-  fl.push_back(f);
+  fl.push_back(f); // just one face for now...
+  fl.push_back(f->halfedge()->twin()->face());
+  fl.push_back(f->halfedge()->next()->twin()->face());
+
   resampler.upsampleSelectedFace(mesh, fl);
 }
 

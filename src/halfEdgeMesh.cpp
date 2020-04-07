@@ -782,21 +782,23 @@ void Halfedge::translate(double dx, double dy, const Matrix4x4& modelViewProj) {
 Info Vertex::getInfo() {
   Info info;
 
-  ostringstream m1, m2, m3, m4, m5, m6;
+  ostringstream m1, m2, m3, m4, m5, m6, m7;
   m1 << "VERTEX";
   m2 << "Address: " << this;
   m3 << "Halfedge: " << elementAddress(halfedge());
   m4 << "Degree: " << degree();
   m5 << "Position: " << position;
   m6 << "Boundary: " << (isBoundary() ? "YES" : "NO");
+  m7 << "Debug: " << (selectedForSubdivision ? "YES" : "NO");
 
-  info.reserve(6);
+  info.reserve(7);
   info.push_back(m1.str());
   info.push_back(m2.str());
   info.push_back(m3.str());
   info.push_back(m4.str());
   info.push_back(m5.str());
   info.push_back(m6.str());
+  info.push_back(m7.str());
 
   return info;
 }

@@ -666,6 +666,9 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& _fa
   set<VertexIter> vertices;
   set<EdgeIter> edges;
   set<FaceIter> faces;
+  set<HalfedgeIter> border;
+  set<VertexIter> borderVertices;
+
 
   copy(_faces.begin(), _faces.end(), std::inserter(faces, faces.begin()));
 
@@ -675,18 +678,36 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& _fa
     do {
       edges.insert(hIter->edge());
       vertices.insert(hIter->vertex());
+      border.insert(hIter);
+      border.insert(hIter->twin());
       hIter = hIter->next();
     } while (hIter != hBegin);
   }
 
+  for (auto f : faces) {
+    auto hBegin = f->halfedge();
+    auto hIter = hBegin;
+    do {
+      if (border.find(hIter) != border.end()) {
+        border.erase(hIter);
+      }
+      hIter = hIter->next();
+    } while (hIter != hBegin);
+  }
+
+  for (auto h : border) {
+    h->vertex()->selectedForSubdivision = true;
+    borderVertices.insert(h->vertex());
+  }
+
   cout << "upsampleSelectedFace begin" << endl;
   cout << "--------------------------" << endl;
+  cout << "border halfedges: " << border.size() << endl;
   cout << "selected faces: " << faces.size() << endl;
   cout << "selected vertices: " << vertices.size() << endl;
   cout << "selected edges: " << edges.size() << endl;
   cout << "--------------------------" << endl;
 
-  //for (auto vit = mesh.verticesBegin(); vit != mesh.verticesEnd(); vit++) {
   for (auto vit: vertices) {
     vit->isNew = false;
     if (!vit->isBoundary()) {
@@ -718,7 +739,6 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& _fa
   }
 
   // Next, compute the updated vertex positions associated with edges.
-  //for (auto fit = mesh.facesBegin(); fit != mesh.facesEnd(); fit++) {
   for (auto eit: edges) {
     if (!eit->isBoundary()) {
       Vector3D v0 = eit->halfedge()->vertex()->position;
@@ -770,15 +790,20 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& _fa
   }
 
   // Finally, flip any new edge that connects an old and new vertex.
-  //for (auto eit = mesh.edgesBegin(); eit != mesh.edgesEnd(); eit++) {
   for (auto eit: edges) {
     if (eit->halfedge()->vertex()->isNew != eit->halfedge()->twin()->vertex()->isNew && eit->isNew) {
       mesh.flipEdge(eit);
     }
   }
 
+  //Unflip edges that create cracks
+  for (auto e : newEdges) {
+    if (e->flipped && borderVertices.find(e->halfedge()->vertex()) != borderVertices.end()) {
+      mesh.flipEdge(e);
+    }
+  }
+
   // Copy the updated vertex positions to the subdivided mesh
-  //for (auto vit = mesh.verticesBegin(); vit != mesh.verticesEnd(); vit++) {
   for (auto vit :vertices) {
     vit->position = vit->newPosition;
   }
@@ -788,7 +813,6 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& _fa
   copy(newFaces.begin(), newFaces.end(), std::inserter(faces, faces.end()));
 
   // clear alreadySplitted flag
-//for (auto fit = mesh.facesBegin(); fit != mesh.facesEnd(); fit++) {
   for (auto fit : faces) {
     fit->alreadySplitted = false;
   }
@@ -803,6 +827,11 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& _fa
       }
     }
   }
+
+  // clear flipped flag
+ /* for (auto eit : edges) {
+    eit->flipped = false;
+  }*/
 
   cout << "--------------------------" << endl;
   cout << "selected faces: " << faces.size() << endl;

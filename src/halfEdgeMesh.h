@@ -566,6 +566,8 @@ class Vertex : public HalfedgeElement {
    */
   bool isNew;
 
+  bool selectedForSubdivision = false;
+
   /**
    * Translate this vertex by a specified vector u.
    */
