@@ -455,7 +455,7 @@ void Scene::exportCglv(const string& name) {
   for (auto obj : objects) {
     auto m = dynamic_cast<Mesh*>(obj);
     if (m) {
-      auto s3dfn = name + "__" + to_string(i++) + ".s3d";
+      auto s3dfn = name + "__" + to_string(i) + ".s3d";
       cout << "export as " << s3dfn;
       fstream file(s3dfn, fstream::trunc | fstream::out);
       for (FaceIter f = m->mesh.facesBegin(); f != m->mesh.facesEnd(); f++) {
@@ -477,6 +477,15 @@ void Scene::exportCglv(const string& name) {
         file << 'E' << ' ' << 0 << ' ' << 0 << ' ' << 0 << endl;
       }
       file.close();
+
+      auto infofn = name + "__" + to_string(i) + ".txt";
+      file = fstream(infofn, fstream::trunc | fstream::out);
+      file << "f: " << m->mesh.nFaces() << endl;
+      file << "e: " << m->mesh.nEdges() << endl;
+      file << "v: " << m->mesh.nVertices() << endl;
+      file.close();
+
+      i++;
     }
   }
 
