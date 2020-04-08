@@ -590,6 +590,8 @@ void Application::char_event(unsigned int codepoint) {
         case 'h':
           scene->selectHalfedge();
           break;
+        case 'e':
+          scene->exportCglv("./");
         default:
           break;
       }

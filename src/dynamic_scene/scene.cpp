@@ -439,6 +439,7 @@ void Scene::erase_selected_joint() {
   }
 }
 
+
 void Scene::upsample_all_mesh(double threshold) {
   for (auto obj :objects) {
     auto m = dynamic_cast<Mesh*>(obj);
@@ -447,6 +448,38 @@ void Scene::upsample_all_mesh(double threshold) {
     }
   }
   clearSelections();
+}
+
+void Scene::exportCglv(const string& path) {
+  int i = 0;
+  for (auto obj : objects) {
+    auto m = dynamic_cast<Mesh*>(obj);
+    if (m) {
+      auto filename = path + "/" + to_string(i++) + ".s3d";
+      cout << "export as " << filename;
+      fstream file(filename, fstream::trunc | fstream::out);
+      for (FaceIter f = m->mesh.facesBegin(); f != m->mesh.facesEnd(); f++) {
+        Vector3D v0, v1, v2, n0, n1, n2;
+        auto h = f->halfedge();
+        n0 = h->vertex()->normal();
+        v0 = h->vertex()->position;
+        n1 = h->next()->vertex()->normal();
+        v1 = h->next()->vertex()->position;
+        n2 = h->next()->next()->vertex()->normal();
+        v2 = h->next()->next()->vertex()->position;
+        file << 'P' << ' ' << 3 << ' ' << 0 << ' ' << 0 << endl;
+        file << 'n' << ' ' << n0.x << ' ' << n0.y << ' ' << n0.z << endl;
+        file << 'v' << ' ' << v0.x << ' ' << v0.y << ' ' << v0.z << endl;
+        file << 'n' << ' ' << n1.x << ' ' << n1.y << ' ' << n1.z << endl;
+        file << 'v' << ' ' << v1.x << ' ' << v1.y << ' ' << v1.z << endl;
+        file << 'n' << ' ' << n2.x << ' ' << n2.y << ' ' << n2.z << endl;
+        file << 'v' << ' ' << v2.x << ' ' << v2.y << ' ' << v2.z << endl;
+        file << 'E' << ' ' << 0 << ' ' << 0 << ' ' << 0 << endl;
+      }
+      file.close();
+    }
+  }
+
 }
 
 void Scene::upsample_selected_face() {
