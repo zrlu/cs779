@@ -36,7 +36,7 @@ Application::Application(AppConfig config) {
 
   timestep = 0.1;
   damping_factor = 0.0;
-
+  loop_subdivision_threshold = config.loop_subdivision_threshold;
   useCapsuleRadius = true;
 }
 
@@ -540,10 +540,10 @@ void Application::char_event(unsigned int codepoint) {
     case MODEL_MODE:
       switch (codepoint) {
         case 'u':
-          scene->upsample_selected_face();
+          scene->upsample_all_mesh(loop_subdivision_threshold);
           break;
         case 'U':
-          scene->upsample_all_mesh(PI / 16);
+          scene->upsample_selected_face();
           break;
         //case 'd':
         //case 'D':

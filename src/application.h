@@ -55,6 +55,7 @@ struct AppConfig {
     pathtracer_num_threads = 1;
     pathtracer_envmap = NULL;
     pathtracer_result_path = "";
+    loop_subdivision_threshold = 0.0f;
   }
 
   size_t pathtracer_ns_aa;
@@ -66,6 +67,7 @@ struct AppConfig {
   size_t pathtracer_num_threads;
   HDRImageBuffer* pathtracer_envmap;
   std::string pathtracer_result_path;
+  double loop_subdivision_threshold;
 };
 
 class Application : public Renderer {
@@ -121,6 +123,7 @@ class Application : public Renderer {
 
   double timestep;
   double damping_factor;
+  double loop_subdivision_threshold = 0.0;
 
   // Length of diagonal of bounding box for the mesh.
   // Guranteed to not have the camera occlude with the mes.

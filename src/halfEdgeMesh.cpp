@@ -72,7 +72,6 @@ bool Face::shouldSubdivide(double threshold) const
       return true;
     }
   }
-
   return false;
 }
 

@@ -20,7 +20,7 @@ typedef unsigned int gid_t;  // XXX Needed on some platforms, since gid_t is
 using namespace std;
 using namespace CMU462;
 
-#define msg(s) cerr << "[Scotty3D] " << s << endl;
+#define msg(s) cerr << "[AdaptiveLoopSubdivisioner] " << s << endl;
 
 void usage(const char* binaryName) {
   printf("Usage: %s [options] <scenefile>\n", binaryName);
@@ -75,9 +75,13 @@ int main(int argc, char** argv) {
   // get the options
   AppConfig config;
   int opt;
-  while ((opt = getopt(argc, argv, "s:l:t:m:e:w:h")) !=
+  while ((opt = getopt(argc, argv, "s:l:t:m:e:w:h:d:")) !=
          -1) {  // for each option...
-    switch (opt) {
+      switch (opt) {
+      case 'd':
+        msg(string("threshold: ") + optarg);
+        config.loop_subdivision_threshold = atof(optarg);
+        break;
       case 's':
         config.pathtracer_ns_aa = atoi(optarg);
         break;

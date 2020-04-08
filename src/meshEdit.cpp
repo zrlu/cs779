@@ -656,6 +656,7 @@ EdgeRecord::EdgeRecord(EdgeIter& _edge) : edge(_edge) {
 
 void MeshResampler::upsample(HalfedgeMesh& mesh, double threshold) {
   list<FaceIter> faces;
+  cout << "threshold: " << threshold << endl;
   for (auto fit = mesh.facesBegin(); fit != mesh.facesEnd(); fit++) {
     if (fit->shouldSubdivide(threshold)) {
       faces.push_back(fit);
