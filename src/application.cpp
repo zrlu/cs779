@@ -541,6 +541,7 @@ void Application::char_event(unsigned int codepoint) {
       switch (codepoint) {
         case 'u':
           scene->upsample_all_mesh(loop_subdivision_threshold);
+          upsample_all_mesh_count++;
           break;
         case 'U':
           scene->upsample_selected_face();
@@ -591,7 +592,7 @@ void Application::char_event(unsigned int codepoint) {
           scene->selectHalfedge();
           break;
         case 'e':
-          scene->exportCglv("./");
+          scene->exportCglv(daefilename + "_" + to_string(loop_subdivision_threshold) + "_" + to_string(upsample_all_mesh_count));
         default:
           break;
       }
@@ -603,6 +604,7 @@ void Application::char_event(unsigned int codepoint) {
 
 void Application::reload()
 {
+  upsample_all_mesh_count = 0;
   load(defaultSceneInfo);
 }
 

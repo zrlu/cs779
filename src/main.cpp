@@ -71,6 +71,24 @@ HDRImageBuffer* load_exr(const char* file_path) {
   return envmap;
 }
 
+string stem(const char* filename)
+{
+  string fName(filename);
+  size_t end = fName.rfind(".");
+  size_t begin = fName.rfind("/");
+  size_t altbegin = fName.rfind("\\");
+  if (altbegin > begin) {
+    begin = altbegin;
+  }
+  if (end == string::npos)  //No extension.
+    return fName;
+
+  if (end == 0)    //. is at the front. Not an extension.
+    return fName;
+
+  return fName.substr(begin+1, end);
+}
+
 int main(int argc, char** argv) {
   // get the options
   AppConfig config;
@@ -140,6 +158,7 @@ int main(int argc, char** argv) {
   // load scene
   app.setDefaultSceneInfo(sceneInfo);
   app.load(sceneInfo);
+  app.daefilename = stem(sceneFilePath.c_str());
 
   // NOTE (sky): are we copying everything to dynamic scene? If so:
   // TODO (sky): check and make sure the destructor is freeing everything

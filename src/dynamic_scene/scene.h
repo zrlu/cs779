@@ -279,7 +279,7 @@ class Scene {
   void erase_selected_joint();
 
   void upsample_all_mesh(double threshold = 0.0);
-  void exportCglv(const string &path);
+  void exportCglv(const string &name);
 
   void upsample_selected_face();
   void downsample_selected_mesh();

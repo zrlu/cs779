@@ -96,6 +96,8 @@ class Application : public Renderer {
   void writeScene(const char* filename);
   void loadScene(const char* filename);
 
+  string daefilename;
+
  private:
   // Mode determines which type of data is visualized/
   // which mode we're currently in (e.g., modeling vs. rendering vs. animation)
@@ -121,6 +123,7 @@ class Application : public Renderer {
   size_t screenW;
   size_t screenH;
 
+  int upsample_all_mesh_count = 0;
   double timestep;
   double damping_factor;
   double loop_subdivision_threshold = 0.0;

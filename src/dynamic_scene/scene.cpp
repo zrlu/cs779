@@ -450,14 +450,14 @@ void Scene::upsample_all_mesh(double threshold) {
   clearSelections();
 }
 
-void Scene::exportCglv(const string& path) {
+void Scene::exportCglv(const string& name) {
   int i = 0;
   for (auto obj : objects) {
     auto m = dynamic_cast<Mesh*>(obj);
     if (m) {
-      auto filename = path + "/" + to_string(i++) + ".s3d";
-      cout << "export as " << filename;
-      fstream file(filename, fstream::trunc | fstream::out);
+      auto s3dfn = name + "__" + to_string(i++) + ".s3d";
+      cout << "export as " << s3dfn;
+      fstream file(s3dfn, fstream::trunc | fstream::out);
       for (FaceIter f = m->mesh.facesBegin(); f != m->mesh.facesEnd(); f++) {
         Vector3D v0, v1, v2, n0, n1, n2;
         auto h = f->halfedge();
