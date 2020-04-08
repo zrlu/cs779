@@ -544,7 +544,8 @@ void Application::char_event(unsigned int codepoint) {
           upsample_all_mesh_count++;
           break;
         case 'U':
-          scene->upsample_selected_face();
+          scene->upsample_all_mesh(0.0);
+          upsample_all_mesh_count++;
           break;
         //case 'd':
         //case 'D':

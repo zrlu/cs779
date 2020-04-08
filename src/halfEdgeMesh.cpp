@@ -886,7 +886,7 @@ Info Face::getInfo() {
   m5 << "Boundary: " << (isBoundary() ? "YES" : "NO");
   m6 << "Subdivision Level: " << subdivisionLevel;
   m7 << "Normal: " << normal();
-  m8 << "Neighbourhood Size: " << neighbours().size();
+  m8 << "Nearby Faces: " << neighbours().size();
 
   info.reserve(8);
   info.push_back(m1.str());
