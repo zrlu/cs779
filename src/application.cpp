@@ -543,7 +543,7 @@ void Application::char_event(unsigned int codepoint) {
           scene->upsample_selected_face();
           break;
         case 'U':
-          scene->upsample_all_mesh();
+          scene->upsample_all_mesh(PI / 16);
           break;
         //case 'd':
         //case 'D':
@@ -915,7 +915,7 @@ void Application::draw_hud() {
   messages.clear();
 
   const size_t size = 16;
-  const float x0 = use_hdpi ? screenW - 100 * 2 : screenW - 100;
+  const float x0 = use_hdpi ? screenW - 180 * 2 : screenW - 100;
   const float y0 = use_hdpi ? 32 : 16;
   const int inc = use_hdpi ? 24 : 12;
   float y = y0 + inc - size;

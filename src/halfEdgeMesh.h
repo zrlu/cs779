@@ -505,6 +505,10 @@ class Face : public HalfedgeElement {
    */
   Vector3D normal() const;
 
+  list<FaceCIter> neighbours() const;
+
+  bool shouldSubdivide(double threshold) const;
+
   /* For subdivision, we need to assign each vertex, edge, and face
    * of the original mesh a unique index that will become the index
    * of some vertex in the new (subdivided) mesh.

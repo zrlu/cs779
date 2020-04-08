@@ -654,11 +654,15 @@ EdgeRecord::EdgeRecord(EdgeIter& _edge) : edge(_edge) {
   //    EdgeRecord::Cost.
 }
 
-void MeshResampler::upsample(HalfedgeMesh& mesh) {
+void MeshResampler::upsample(HalfedgeMesh& mesh, double threshold) {
   list<FaceIter> faces;
   for (auto fit = mesh.facesBegin(); fit != mesh.facesEnd(); fit++) {
-    faces.push_back(fit);
+    if (fit->shouldSubdivide(threshold)) {
+      faces.push_back(fit);
+    }
   }
+  cout << faces.size() << "/" << mesh.nFaces() << endl;
+  cout << (double)faces.size() / mesh.nFaces() << endl;
   upsampleSelectedFace(mesh, faces);
 }
 
@@ -701,11 +705,11 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& _fa
   }
 
   cout << "upsampleSelectedFace begin" << endl;
-  cout << "--------------------------" << endl;
-  cout << "border halfedges: " << border.size() << endl;
-  cout << "selected faces: " << faces.size() << endl;
-  cout << "selected vertices: " << vertices.size() << endl;
-  cout << "selected edges: " << edges.size() << endl;
+  cout << "----------input-----------" << endl;
+  cout << "halfedges: " << border.size() << endl;
+  cout << "faces: " << faces.size() << endl;
+  cout << "vertices: " << vertices.size() << endl;
+  cout << "edges: " << edges.size() << endl;
   cout << "--------------------------" << endl;
 
   for (auto vit: vertices) {
@@ -833,10 +837,10 @@ void MeshResampler::upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter>& _fa
     eit->flipped = false;
   }
 
-  cout << "--------------------------" << endl;
-  cout << "selected faces: " << faces.size() << endl;
-  cout << "selected vertices: " << vertices.size() << endl;
-  cout << "selected edges: " << edges.size() << endl;
+  cout << "---------output-----------" << endl;
+  cout << "faces: " << faces.size() << endl;
+  cout << "vertices: " << vertices.size() << endl;
+  cout << "edges: " << edges.size() << endl;
   cout << "--------------------------" << endl;
   cout << "upsampleSelectedFace end" << endl;
 

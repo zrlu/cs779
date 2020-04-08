@@ -16,7 +16,7 @@ class MeshResampler {
   MeshResampler(){};
   ~MeshResampler() {}
 
-  void upsample(HalfedgeMesh& mesh);
+  void upsample(HalfedgeMesh& mesh, double threshold);
   void upsampleSelectedFace(HalfedgeMesh& mesh, list<FaceIter> &faces);
   void downsample(HalfedgeMesh& mesh);
   void resample(HalfedgeMesh& mesh);

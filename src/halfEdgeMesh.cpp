@@ -44,6 +44,38 @@ Vector3D Face::normal() const {
   return N.unit();
 }
 
+list<FaceCIter> Face::neighbours() const
+{
+  list<FaceCIter> N;
+
+  auto begin = halfedge();
+  auto h = begin;
+  do {
+    auto f = h->twin()->face();
+    if (!f->isBoundary()) {
+      N.push_back(f);
+    }
+    h = h->next();
+  } while (h != begin);
+  return N;
+}
+
+bool Face::shouldSubdivide(double threshold) const
+{
+  auto N = neighbours();
+  auto size = N.size();
+  
+  for (auto f : N) {
+    double dotProduct = dot(f->normal(), normal());
+    double angle = abs(acos(dotProduct));
+    if (angle > threshold) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 void HalfedgeMesh::build(const vector<vector<Index> >& polygons,
                          const vector<Vector3D>& vertexPositions)
 // This method initializes the halfedge data structure from a raw list of
@@ -801,7 +833,7 @@ void Halfedge::translate(double dx, double dy, const Matrix4x4& modelViewProj) {
 Info Vertex::getInfo() {
   Info info;
 
-  ostringstream m1, m2, m3, m4, m5, m6, m7;
+  ostringstream m1, m2, m3, m4, m5, m6, m7, m8;
   m1 << "VERTEX";
   m2 << "Address: " << this;
   m3 << "Halfedge: " << elementAddress(halfedge());
@@ -809,8 +841,9 @@ Info Vertex::getInfo() {
   m5 << "Position: " << position;
   m6 << "Boundary: " << (isBoundary() ? "YES" : "NO");
   m7 << "Debug: " << (selectedForSubdivision ? "YES" : "NO");
+  m8 << "Normal: " << normal();
 
-  info.reserve(7);
+  info.reserve(8);
   info.push_back(m1.str());
   info.push_back(m2.str());
   info.push_back(m3.str());
@@ -818,6 +851,7 @@ Info Vertex::getInfo() {
   info.push_back(m5.str());
   info.push_back(m6.str());
   info.push_back(m7.str());
+  info.push_back(m8.str());
 
   return info;
 }
@@ -845,21 +879,25 @@ Info Edge::getInfo() {
 Info Face::getInfo() {
   Info info;
 
-  ostringstream m1, m2, m3, m4, m5, m6;
+  ostringstream m1, m2, m3, m4, m5, m6, m7, m8;
   m1 << "FACE";
   m2 << "Address: " << this;
   m3 << "Halfedge: " << elementAddress(halfedge());
   m4 << "Degree: " << degree();
   m5 << "Boundary: " << (isBoundary() ? "YES" : "NO");
   m6 << "Subdivision Level: " << subdivisionLevel;
+  m7 << "Normal: " << normal();
+  m8 << "Neighbourhood Size: " << neighbours().size();
 
-  info.reserve(6);
+  info.reserve(8);
   info.push_back(m1.str());
   info.push_back(m2.str());
   info.push_back(m3.str());
   info.push_back(m4.str());
   info.push_back(m5.str());
   info.push_back(m6.str());
+  info.push_back(m7.str());
+  info.push_back(m8.str());
 
   return info;
 }

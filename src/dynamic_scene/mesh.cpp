@@ -483,8 +483,6 @@ void Mesh::upsample_selected_face() {
   FaceIter f = face->halfedge()->face();
   auto fl = list<FaceIter>();
   fl.push_back(f); // just one face for now...
-  //fl.push_back(f->halfedge()->twin()->face());
-  //fl.push_back(f->halfedge()->next()->twin()->face());
 
   resampler.upsampleSelectedFace(mesh, fl);
 }
@@ -627,7 +625,7 @@ void Mesh::bevel_selected_element() {
 
 void Mesh::triangulate() { mesh.triangulate(); }
 
-void Mesh::upsample() {
+void Mesh::upsample(double threshold) {
   for (FaceCIter f = mesh.facesBegin(); f != mesh.facesEnd(); f++) {
     if (f->degree() != 3) {
       cerr << "Warning: refusing to apply Loop subdivision to surface with "
@@ -637,7 +635,7 @@ void Mesh::upsample() {
       return;
     }
   }
-  resampler.upsample(mesh);
+  resampler.upsample(mesh, threshold);
   // Make sure the bind position is set
   for (VertexIter v = mesh.verticesBegin(); v != mesh.verticesEnd(); v++) {
     v->bindPosition = v->position;

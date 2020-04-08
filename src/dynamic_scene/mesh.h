@@ -61,7 +61,7 @@ class Mesh : public SceneObject {
   void split_selected_edge();
   void erase_selected_element();
   void bevel_selected_element();
-  void upsample();
+  void upsample(double threshold);
   void downsample();
   void resample();
   void triangulate();
